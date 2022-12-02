@@ -2,12 +2,11 @@
 These are some simple programs to investigate LRU.
 
 ## Kernel Configuartion (>= v6.1.0)
-1. Enable cgroups: a. Enable CONFIG_CGROUPS, b. Enable CONFIG_MEMCG
-2. Enable LRU_GEN
+1. Enable cgroups: a. Enable `CONFIG_CGROUPS`, b. Enable `CONFIG_MEMCG`
+2. Enable `LRU_GEN`
 
 ## Steps
 1. Create a new cgroup:
-	ref: An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021 [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
 	- a. Create a new cgroup in `/sys/fs/cgroup` by using `mkdir mygrp`. `cat mygrp/pids.current` should return 0.
 	- b. Set the maximum memory (hard mem). (eg., `echo 50M > mygrp/memory.max`)
 	- c. `memeory.swap` is disabled by default. The hard limit should be 0 and it can be set simialr to (b)
@@ -19,3 +18,4 @@ These are some simple programs to investigate LRU.
 
 ## References
 An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021. [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
+Control Group v2 [docs](https://android.googlesource.com/kernel/msm/+/refs/heads/android-msm-salmon-4.9-pie-wear-mr1/Documentation/cgroup-v2.txt)
