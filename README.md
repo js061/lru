@@ -1,9 +1,12 @@
 # LRU
-These are some simple programs to investigate LRU.
+These are some simple programs to investigate LRU and MGLRU.
 
-## Kernel Configuartion (>= v6.1.0)
+## Kernel Configuration (>= v6.1.0)
 1. Enable cgroups: a. Enable `CONFIG_CGROUPS`, b. Enable `CONFIG_MEMCG`
 2. Enable `LRU_GEN`
+
+## Description
+`lru.c` uses kprobe to track the important kernel functions ralated to page cache called within the given process and process group. Files in `tests` are used to create several kinds of `read` processes. `create_files.sh` is used to create text files for testing.
 
 ## Steps
 1. Create a new cgroup:
