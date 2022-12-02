@@ -1,15 +1,21 @@
-# Kernel Configuartion (>= v6.1.0)
+# LRU
+These are some simple programs to investigate LRU.
+
+## Kernel Configuartion (>= v6.1.0)
 1. Enable cgroups: a. Enable CONFIG_CGROUPS, b. Enable CONFIG_MEMCG
 2. Enable LRU_GEN
 
-# Steps
+## Steps
 1. Create a new cgroup:
-	> ref: An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021 [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
-	a. Create a new cgroup in `/sys/fs/cgroup` by using `mkdir mygrp`. `cat mygrp/pids.current` should return 0.
-	b. Set the maximum memory (hard mem). (eg., `echo 50M > mygrp/memory.max`)
-	c. `memeory.swap` is disabled by default. The hard limit should be 0 and it can be set simialr to (b)
+	ref: An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021 [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
+	- a. Create a new cgroup in `/sys/fs/cgroup` by using `mkdir mygrp`. `cat mygrp/pids.current` should return 0.
+	- b. Set the maximum memory (hard mem). (eg., `echo 50M > mygrp/memory.max`)
+	- c. `memeory.swap` is disabled by default. The hard limit should be 0 and it can be set simialr to (b)
 2. Get pgid/pid by running wordc
 3. Add this process to cgroup. (eg., `echo [pid] > mygroup/cgroup.procs`)
 4. Install and run the linux module (lru), passing the pid obtained from `wordc` as the value of arg `int_str` (eg., `sudo insmod lru.ko int_str="2672"`)
 5. Choose an option from `wordc`. It will create a new child process in the same process group as wordc's main
 6. Have a look at the output from `dmesg`, `vmtouch`, as well as `mygrp/memory.stat`
+
+## References
+An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021. [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
