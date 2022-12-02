@@ -17,5 +17,5 @@ These are some simple programs to investigate LRU.
 6. Have a look at the output from `dmesg`, `vmtouch`, as well as `mygrp/memory.stat`
 
 ## References
-An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021. [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
-Control Group v2 [docs](https://android.googlesource.com/kernel/msm/+/refs/heads/android-msm-salmon-4.9-pie-wear-mr1/Documentation/cgroup-v2.txt)
+1. An introduction to control groups (cgroups) version 2 - Michael Kerrisk - NDC TechTown 2021. [video](https://www.youtube.com/watch?v=kcnFQgg9ToY&t=2993s&ab_channel=NDCConferences)
+2. Control Group v2 [docs](https://android.googlesource.com/kernel/msm/+/refs/heads/android-msm-salmon-4.9-pie-wear-mr1/Documentation/cgroup-v2.txt)
