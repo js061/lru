@@ -21,6 +21,8 @@ static int pgid;
 static int add_cnt;
 static int act_cnt;
 static int shr_cnt;
+static int mark_cnt;
+static int mark_prev_cnt;
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jinshu Liu");
@@ -36,6 +38,7 @@ static char symbol_mark_accessed[KSYM_NAME_LEN] = "folio_mark_accessed";
 static char symbol_active_fn[KSYM_NAME_LEN] = "folio_activate_fn";
 static char symbol_lru_add_fn[KSYM_NAME_LEN] = "lru_add_fn";
 static char symbol_shrink_lruvec[KSYM_NAME_LEN] = "shrink_lruvec";
+
 module_param_string(symbol_read_iter, symbol_read_iter, KSYM_NAME_LEN, 0644);
 module_param_string(symbol_filemap_read, symbol_filemap_read, KSYM_NAME_LEN, 0644);
 module_param_string(symbol_page_cache, symbol_page_cache, KSYM_NAME_LEN, 0644);
@@ -67,6 +70,7 @@ static void __kprobes handler_post_read_iter(struct kprobe *p, struct pt_regs *r
   }
   return;
 }
+
 static struct kprobe kp_filemap_read = {
   .symbol_name    = symbol_filemap_read,
 };
@@ -79,6 +83,7 @@ static void __kprobes handler_post_filemap_read(struct kprobe *p, struct pt_regs
   }
   return;
 }
+
 static struct kprobe kp_page_cache = {
   .symbol_name    = symbol_page_cache,
 };
@@ -91,6 +96,7 @@ static void __kprobes handler_post_page_cache(struct kprobe *p, struct pt_regs *
   }
   return;
 }
+
 static struct kprobe kp_folio_add_lru = {
   .symbol_name    = symbol_folio_add_lru,
 };
@@ -104,6 +110,7 @@ static void __kprobes handler_post_folio_add_lru(struct kprobe *p, struct pt_reg
   }
   return;
 }
+
 static struct kprobe kp_mark_accessed = {
   .symbol_name    = symbol_mark_accessed,
 };
@@ -111,11 +118,13 @@ static int __kprobes handler_pre_mark_accessed(struct kprobe *p, struct pt_regs 
   return 0;
 }
 static void __kprobes handler_post_mark_accessed(struct kprobe *p, struct pt_regs *regs, unsigned long flags) {
-  /*if (current->pid != pid && get_curr_pgid() == pgid) {
+  if (current->pid != pid && get_curr_pgid() == pgid) {
+    mark_cnt += 1;
     printk(KERN_INFO "POST folio_mark_accessed");
-  }*/
+  }
   return;
 }
+
 static struct kprobe kp_active_fn = {
   .symbol_name    = symbol_active_fn,
 };
@@ -129,6 +138,7 @@ static void __kprobes handler_post_active_fn(struct kprobe *p, struct pt_regs *r
   }
   return;
 }
+
 static struct kprobe kp_lru_add_fn = {
   .symbol_name = symbol_lru_add_fn,
 };
@@ -142,6 +152,7 @@ static void __kprobes handler_post_lru_add_fn(struct kprobe *p, struct pt_regs *
   }
   return;
 }
+
 static struct kprobe kp_shrink_lruvec = {
   .symbol_name = symbol_shrink_lruvec,
 };
@@ -184,8 +195,11 @@ out:
 
 static int lru_show(struct seq_file *m, void *v) {
   seq_printf(m, "pid: %d, pgid: %d\n", pid, pgid);
-  seq_printf(m, "addition times: %d\n activatation times: %d\n", add_cnt, act_cnt);
-  seq_printf(m, "shrink_lruvec times: %d\n", shr_cnt);
+  seq_printf(m, "addition times: %d\nactivatation times: %d\n", add_cnt, act_cnt);
+  seq_printf(m, "shrink_lruvec times: %d\nmark times: %d\n", shr_cnt, mark_cnt);
+  seq_printf(m, "mark times - prev mark times: %d\n", mark_cnt - mark_prev_cnt);
+
+  mark_prev_cnt = mark_cnt;
   return 0;
 }
 
@@ -204,6 +218,8 @@ static int __init lru_init(void) {
   add_cnt = 0;
   act_cnt = 0;
   shr_cnt = 0;
+  mark_cnt = 0;
+  mark_prev_cnt = 0;
   printk(KERN_INFO "pid: %d, pgid: %d\n", pid, pgid);
   kp_read_iter.pre_handler = handler_pre_read_iter;
   kp_read_iter.post_handler = handler_post_read_iter;
