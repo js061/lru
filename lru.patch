@@ -1,0 +1,28 @@
+diff --git a/include/linux/mm_inline.h b/include/linux/mm_inline.h
+index e8ed225d8f7c..e31a0b43d717 100644
+--- a/include/linux/mm_inline.h
++++ b/include/linux/mm_inline.h
+@@ -137,7 +137,14 @@ static inline int lru_tier_from_refs(int refs)
+ 	VM_WARN_ON_ONCE(refs > BIT(LRU_REFS_WIDTH));
+ 
+ 	/* see the comment in folio_lru_refs() */
+-	return order_base_2(refs + 1);
++	if (refs == 0) {
++		return refs;
++	}
++	//return refs;
++	//return refs / 2;
++	return refs + 1;
++	//return (refs + 1) / 2;
++	//return order_base_2(refs + 1);
+ }
+ 
+ static inline int folio_lru_refs(struct folio *folio)
+@@ -168,6 +175,7 @@ static inline bool lru_gen_is_active(struct lruvec *lruvec, int gen)
+ 	VM_WARN_ON_ONCE(gen >= MAX_NR_GENS);
+ 
+ 	/* see the comment on MIN_NR_GENS */
++	//return gen == lru_gen_from_seq(max_seq);
+ 	return gen == lru_gen_from_seq(max_seq) || gen == lru_gen_from_seq(max_seq - 1);
+ }
+ 
